@@ -1,0 +1,6 @@
+{
+  "name": "DevLaunch AI",
+  "description": "Premium AI Software Architect. Enter your startup or software idea to generate comprehensive PRDs, database schemas, ER diagrams, tech stack recommendations, API routes, sprint plans, and project roadmaps.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
