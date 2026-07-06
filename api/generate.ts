@@ -253,8 +253,11 @@ JSON Structure to populate:
 `;
 
     // 3. Request Gemini compilation
-    const gemini = getGeminiClient();
-    const result = await gemini.models.generateContent({
+   let result;
+
+for (let attempt = 1; attempt <= 3; attempt++) {
+  try {
+    result = await gemini.models.generateContent({
       model: aiModel,
       contents: prompt,
       config: {
@@ -262,6 +265,19 @@ JSON Structure to populate:
         responseMimeType: "application/json",
       },
     });
+
+    break;
+  } catch (err: any) {
+    console.error(`Gemini attempt ${attempt} failed`, err);
+
+    if (err.status === 503 && attempt < 3) {
+      await new Promise(resolve => setTimeout(resolve, attempt * 2000));
+      continue;
+    }
+
+    throw err;
+  }
+}
 
     const parsedContent = JSON.parse((result.text || "{}").trim());
 
@@ -316,9 +332,16 @@ JSON Structure to populate:
 
     return res.status(200).json(compiledProject);
   } catch (err: any) {
-    console.error("CTO compiler pipeline failed:", err);
-    return res.status(500).json({
-      message: err.message || "An unexpected error occurred during AI planning compilation.",
+  console.error("CTO compiler pipeline failed:", err);
+
+  if (err.status === 503) {
+    return res.status(503).json({
+      message: "The AI service is currently busy. Please try again in a few moments.",
     });
   }
+
+  return res.status(500).json({
+    message: err.message || "An unexpected server error occurred.",
+  });
+}
 }
