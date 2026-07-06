@@ -253,7 +253,10 @@ JSON Structure to populate:
 `;
 
     // 3. Request Gemini compilation
-   let result;
+   // 3. Request Gemini compilation
+const gemini = getGeminiClient();   // <-- ADD THIS LINE
+
+let result;
 
 for (let attempt = 1; attempt <= 3; attempt++) {
   try {
